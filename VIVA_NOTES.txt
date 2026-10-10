@@ -1,0 +1,61 @@
+CampusEats — VIVA CHEAT SHEET (read this top to bottom, 2 minutes)
+=============================================================
+
+1) WHICH JDBC DRIVER?
+   SQLite JDBC driver, org.sqlite.JDBC, version 3.36.0.3.
+   Jar is inside the project now:  lib/sqlite-jdbc-3.36.0.3.jar
+   (added to the NetBeans classpath in nbproject/project.properties
+   and to the runtime Class-Path in manifest.mf).
+   No Class.forName() needed — JDBC 4 auto-loads the driver.
+
+2) WHERE IS THE JDBC CONNECTION MADE?
+   src/campuseats/database/DatabaseConnection.java
+     - Line ~9:  URL = "jdbc:sqlite:database/campuseats.db"
+     - getConnection(): DriverManager.getConnection(URL)
+   Who calls it:
+     - UserDAO.validateLogin()      -> login check (SELECT ... WHERE username=? AND password=?)
+     - MenuServlet.doGet()          -> reads menu_items table
+     - OrderServlet.doPost()        -> INSERTs into orders table
+     - AppInitializer               -> runs DatabaseConnection.initialize() once at startup
+                                       (creates users / menu_items / orders + seed data)
+
+3) WHERE IS THE SESSION?
+   (HttpSession — the servlet one, not the Node one)
+   - CREATED : LoginServlet.doPost() -> request.getSession(true),
+               then session.setAttribute("username", ...)   [src/campuseats/web/LoginServlet.java]
+   - READ    : MenuServlet.doGet() and OrderServlet.doPost()
+               -> request.getSession(false); if null -> redirect to /login
+   - KILLED  : LogoutServlet.doGet() -> session.invalidate()
+   (The Node web app separately uses a campuseats_session cookie +
+   a sessions table in server.js — different mechanism, untouched.)
+
+4) WHERE IS THE SERVLET CODE?
+   src/campuseats/web/
+     - LoginServlet.java    (/login)
+     - MenuServlet.java     (/menu)
+     - OrderServlet.java    (/order)
+     - LogoutServlet.java   (/logout)
+     - AppInitializer.java  (ServletContextListener, DB setup on startup)
+   web/WEB-INF/web.xml  -> all <servlet> + <servlet-mapping> entries live here.
+   Deploy: copy the web/ folder to Tomcat as a web app (or "Run" the
+   project); open http://localhost:8080/<app>/login
+
+5) WHAT DID *I* ADD vs WHAT WAS ALREADY THERE?
+   Already there : DatabaseConnection (JDBC helper), UserDAO (login DAO),
+                   Swing frontend, Node web app (server.js + public/).
+   Added for viva: lib/*.jar (the actual driver jars), the whole
+                   campuseats.web servlet package, web/WEB-INF/web.xml,
+                   menu_items + orders tables in initialize(), and one line
+                   in UserDAO so the desktop app also seeds the DB.
+   NOT touched   : server.js, public/, package.json, database/campuseats-web.db
+                   — the running web app works exactly as before.
+
+6) LIKELY QUESTIONS → ONE-LINE ANSWERS
+   "Why no Class.forName?"  -> JDBC 4+ drivers self-register via ServiceLoader.
+   "Why DriverManager?"      -> Simple file DB, no pool needed; one connection per request.
+   "PreparedStatement why?"  -> Prevents SQL injection (login form input).
+   "getSession(true) vs (false)?" -> true CREATES if missing (login);
+                                     false returns null if missing (guard pages).
+   "Where does the DB file go?" -> database/campuseats.db, created on first connect.
+   "Node app vs servlets?"   -> Node app is the local demo UI (node:sqlite, no JDBC);
+                                servlets are the Java EE layer showing JDBC + sessions.

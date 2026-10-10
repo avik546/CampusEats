@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusEats · Your campus, delivered</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="CampusEats home"><span class="brand-icon">CE</span><span>Campus<span class="orange">Eats</span><small>GOOD FOOD. CLOSE BY.</small></span></a>
+    <div class="nav-caption">YOUR CAMPUS TABLE</div>
+    <nav aria-label="Main navigation">
+      <button class="nav-button active" data-view="discover"><span>◈</span> Discover <span class="nav-dot"></span></button>
+      <button class="nav-button" data-view="orders"><span>▤</span> My orders</button>
+      <button class="nav-button staff-only hidden" data-view="staff"><span>▦</span> Shop dashboard</button>
+    </nav>
+    <div class="sidebar-note"><span class="note-emoji">🛵</span><strong>Made for campus life.</strong><p>From your favourite canteen<br>to your next study break.</p><span class="little-pill">A LITTLE LESS QUEUE</span></div>
+    <div class="sidebar-bottom"><span class="connection-dot"></span> <span id="connection-status">Connecting…</span><small>LOCAL CAMPUS EDITION</small></div>
+  </aside>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="campus-location"><span class="location-icon">⌖</span><div><small>DELIVERING INSIDE CAMPUS</small><strong id="header-location">Choose location at checkout</strong></div></div>
+      <div class="top-actions"><button class="cart-button" id="open-cart">Bag <span id="cart-count">0</span></button><button class="account-button" id="account-button">Sign in <span>↗</span></button><button class="text-button hidden" id="logout-button">Sign out</button></div>
+    </header>
+    <main id="main-content" tabindex="-1"></main>
+    <footer><span>CampusEats <span class="orange">♥</span> Campus cravings, sorted.</span><span>Fresh from your college canteens.</span></footer>
+  </div>
+  <dialog id="auth-dialog" class="modal auth-modal">
+    <form id="auth-form">
+      <button type="button" class="close-button" data-close="auth-dialog" aria-label="Close sign in">×</button>
+      <span class="eyebrow">YOUR NEXT GOOD MEAL</span><h2 id="auth-title">Welcome to the table.</h2><p class="muted" id="auth-subtitle">Sign in to order from your campus favourites.</p>
+      <label id="name-label" class="hidden">Your name<input id="auth-name" name="name" autocomplete="name" maxlength="80"></label>
+      <label>Email address<input id="auth-email" name="email" type="email" required autocomplete="username" placeholder="you@college.edu" maxlength="120"></label>
+      <label>Password<input id="auth-password" name="password" type="password" required autocomplete="current-password" maxlength="128" placeholder="Your password"></label>
+      <p class="form-error" id="auth-error" role="alert"></p><button type="submit" class="primary-button full" id="auth-submit">Sign in →</button>
+      <p class="auth-switch"><span id="auth-switch-copy">New here?</span> <button type="button" class="text-button" id="toggle-auth">Create an account</button></p>
+      <div class="demo-box"><strong>Try the local demo</strong><div><button type="button" class="demo-button" data-demo="student">Student account ↗</button><button type="button" class="demo-button" data-demo="staff">Shop staff ↗</button></div><small>Demo accounts are for this PC only.</small></div>
+    </form>
+  </dialog>
+  <dialog id="cart-dialog" class="modal cart-modal">
+    <button class="close-button" data-close="cart-dialog" aria-label="Close bag">×</button>
+    <span class="eyebrow">GOOD THINGS IN HERE</span><h2>Your food bag<span class="orange">.</span></h2>
+    <div id="cart-content"></div>
+  </dialog>
+  <dialog id="checkout-dialog" class="modal checkout-modal">
+    <button class="close-button" data-close="checkout-dialog" aria-label="Close checkout">×</button>
+    <span class="eyebrow">ONE LAST LITTLE STEP</span><h2>Where should we meet?</h2><p class="muted">Delivery is available inside campus only.</p>
+    <form id="checkout-form">
+      <div class="form-grid"><label>Recipient name<input name="recipient" id="recipient" required maxlength="80" autocomplete="name"></label><label>Mobile number<input name="phone" required inputmode="tel" type="tel" pattern="[6-9][0-9]{9}" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel"></label></div>
+      <div class="form-grid"><label>Campus location<select name="location" required><option value="">Choose a location</option><option>Hostel A</option><option>Hostel B</option><option>Hostel C</option><option>Academic Block</option><option>Library Courtyard</option><option>Student Centre</option><option>Sports Complex</option></select></label><label>Room / meeting point<input name="room" required maxlength="80" placeholder="e.g. Room 204 or main entrance"></label></div>
+      <label>Delivery instructions <span class="muted">(optional)</span><textarea name="instructions" maxlength="300" rows="2" placeholder="Anything your delivery person should know?"></textarea></label>
+      <div class="payment-box"><span>◉</span><div><strong>Cash on delivery</strong><small>Pay when your food arrives. No online payment needed.</small></div></div>
+      <div id="checkout-summary"></div><p id="checkout-error" class="form-error" role="alert"></p><button class="primary-button full" id="place-order" type="submit">Place order →</button>
+    </form>
+  </dialog>
+  <dialog id="switch-dialog" class="modal small-modal"><h2>A fresh bag?</h2><p class="muted">Your bag has food from another shop. Start a new bag to order from this shop?</p><div class="dialog-actions"><button class="secondary-button" data-close="switch-dialog">Keep my bag</button><button class="primary-button" id="confirm-switch">Start new bag</button></div></dialog>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+</body>
+</html>
